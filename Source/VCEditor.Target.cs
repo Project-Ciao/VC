@@ -10,6 +10,8 @@ public class VCEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_4;
-		ExtraModuleNames.Add("VC");
-	}
+        bUsesSteam = true;
+
+        ExtraModuleNames.AddRange(new string[] { "VC", "VCSteam" });
+    }
 }
