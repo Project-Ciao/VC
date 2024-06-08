@@ -73,6 +73,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interact Component|Trace")
 		bool bDebugTrace;
 
+	// Resets any currently highlighted actors if the pawn owner is unposessed
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interact Component")
+		bool bRemoveHighlightOnPawnOwnerUnposesss;
+
 	// Returns true if this belongs to 
 	UFUNCTION(BlueprintPure, Category = "Interact Component")
 		bool IsLocallyControlled() const;
@@ -99,4 +103,9 @@ protected:
 		void Server_EndUse(UInteractableComponent* InteractableComponent);
 
 	void CurrentInteractableComponentChange(UInteractableComponent* OldInteractableComponent, UInteractableComponent* NewInteractableComponent);
+
+	virtual void InitializeComponent() override;
+
+	UFUNCTION()
+	virtual void OnControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
 };

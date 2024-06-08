@@ -11,6 +11,8 @@ UInteractComponent::UInteractComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	bRemoveHighlightOnPawnOwnerUnposesss = true;
+	bWantsInitializeComponent = true;
 	SetIsReplicatedByDefault(true);
 
 	TraceLength = 256.f;
@@ -27,8 +29,9 @@ void UInteractComponent::InputBeginUse()
 {
 	if (CurrentInteractableComponents.Num() >= 1)
 	{
-		BeginUse(CurrentInteractableComponents[0]);
-		InteractedComponent = CurrentInteractableComponents[0];
+		UInteractableComponent* CurrentInteractedComponent = CurrentInteractableComponents[0];
+		BeginUse(CurrentInteractedComponent);
+		InteractedComponent = CurrentInteractedComponent;
 	}
 }
 
@@ -44,6 +47,22 @@ void UInteractComponent::InputEndUse()
 void UInteractComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	const APawn* PawnOwner = Cast<APawn>(GetOwner());
+	if (PawnOwner == nullptr)
+	{
+		return;
+	}
+
+	if (!PawnOwner->IsControlled())
+	{
+		return;
+	}
+
+	if (!PawnOwner->IsLocallyControlled())
+	{
+		return;
+	}
 
 	TArray<UInteractableComponent*> OldInteractableComponents = CurrentInteractableComponents;
 	UInteractableComponent* OldInteractableComponent = CurrentInteractableComponents.IsValidIndex(0) ? CurrentInteractableComponents[0] : nullptr;
@@ -107,6 +126,11 @@ TArray<UInteractableComponent*> UInteractComponent::GetOverlappingInteractableCo
 		// Look at all overlapping actors, find their interact components
 		for (AActor* Actor : OverlappedActors)
 		{
+			if (Actor == GetOwner())
+			{
+				continue;
+			}
+
 			TArray<UInteractableComponent*> InteractableComponents;
 			Actor->GetComponents<UInteractableComponent*>(InteractableComponents);
 
@@ -308,10 +332,10 @@ void UInteractComponent::CurrentInteractableComponentChange(UInteractableCompone
 	if (APawn* PawnOwner = Cast<APawn>(GetOwner()))
 	{
 		// only run this function on locally, player controlled pawns
-		if (!(PawnOwner->IsPlayerControlled() && PawnOwner->IsLocallyControlled()))
-		{
-			return;
-		}
+		//if (!(PawnOwner->IsPlayerControlled() && PawnOwner->IsLocallyControlled()))
+		//{
+		//	return;
+		//}
 	}
 
 	if (OldInteractableComponent)
@@ -325,6 +349,29 @@ void UInteractComponent::CurrentInteractableComponentChange(UInteractableCompone
 	}
 
 	OnCurrentInteractableComponentChange.Broadcast(OldInteractableComponent, NewInteractableComponent);
+}
+
+void UInteractComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	if (bRemoveHighlightOnPawnOwnerUnposesss)
+	{
+		APawn* PawnOwner = Cast<APawn>(GetOwner());
+		if (PawnOwner == nullptr)
+		{
+			return;
+		}
+		
+		PawnOwner->ReceiveControllerChangedDelegate.AddUniqueDynamic(this, &ThisClass::OnControllerChanged);
+	}
+}
+
+void UInteractComponent::OnControllerChanged(APawn* Pawn, AController* OldController, AController* NewController)
+{
+	UInteractableComponent* OldInteractableComponent = CurrentInteractableComponents.IsValidIndex(0) ? CurrentInteractableComponents[0] : nullptr;
+	CurrentInteractableComponents.Empty();
+	CurrentInteractableComponentChange(OldInteractableComponent, nullptr);
 }
 
 bool UInteractComponent::Server_BeginUse_Validate(UInteractableComponent* InteractableComponent)
