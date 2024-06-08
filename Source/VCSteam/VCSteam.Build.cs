@@ -9,18 +9,15 @@ public class VCSteam : ModuleRules
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[] 
-			{ 
-				"Core",
-				"CoreUObject",
-				"Engine"
-			});
-		
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
-				
-			});
+		{ 
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"OnlineSubsystem",
+			"OnlineSubsystemUtils",
+            "OnlineSubsystemSteam",
+        });
 
-        DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
+        //DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
     }
 }
