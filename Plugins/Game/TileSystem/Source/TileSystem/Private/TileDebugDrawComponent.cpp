@@ -9,6 +9,7 @@
 UTileDebugDrawComponent::UTileDebugDrawComponent()
 {
 	bSelectable = false;
+	SetMobility(EComponentMobility::Static);
 }
 
 FDebugRenderSceneProxy* UTileDebugDrawComponent::CreateDebugSceneProxy()
@@ -39,6 +40,53 @@ FDebugRenderSceneProxy* UTileDebugDrawComponent::CreateDebugSceneProxy()
 			Result.bEditorPrimitiveRelevance = true;
 			return Result;
 		}
+
+		//virtual void DrawStaticElements(FStaticPrimitiveDrawInterface* PDI) override
+		//{
+		//	//FMaterialCache DefaultMaterialCache(Collector);
+		//	//FMaterialCache SolidMeshMaterialCache(Collector, /**bUseLight*/ true, SolidMeshMaterial.Get());
+
+		//	// Draw Boxes
+		//	for (const FDebugBox& Box : Boxes)
+		//	{
+		//		//Box.Draw(PDI, (Box.DrawTypeOverride != EDrawType::Invalid) ? Box.DrawTypeOverride : DrawType, DrawAlpha, DefaultMaterialCache, ViewIndex, Collector);
+
+		//		FVector B[2];
+		//		B[0] = Box.Box.Min;
+		//		B[1] = Box.Box.Max;
+		//		FMatrix Matrix = Box.Transform.ToMatrixWithScale();
+
+		//		for (int i = 0; i < 2; i++)
+		//		{
+		//			for (int j = 0; j < 2; j++)
+		//			{
+		//				FVector P, Q;
+
+		//				P.X = B[i].X; Q.X = B[i].X;
+		//				P.Y = B[j].Y; Q.Y = B[j].Y;
+		//				P.Z = B[0].Z; Q.Z = B[1].Z;
+		//				P = Matrix.TransformPosition(P); Q = Matrix.TransformPosition(Q);
+		//				//PDI->DrawLine(P, Q, Color, DepthPriority, Thickness, DepthBias, bScreenSpace);
+
+		//				P.Y = B[i].Y; Q.Y = B[i].Y;
+		//				P.Z = B[j].Z; Q.Z = B[j].Z;
+		//				P.X = B[0].X; Q.X = B[1].X;
+		//				P = Matrix.TransformPosition(P); Q = Matrix.TransformPosition(Q);
+		//				//PDI->DrawLine(P, Q, Color, DepthPriority, Thickness, DepthBias, bScreenSpace);
+
+		//				P.Z = B[i].Z; Q.Z = B[i].Z;
+		//				P.X = B[j].X; Q.X = B[j].X;
+		//				P.Y = B[0].Y; Q.Y = B[1].Y;
+		//				P = Matrix.TransformPosition(P); Q = Matrix.TransformPosition(Q);
+		//				//PDI->DrawLine(P, Q, Color, DepthPriority, Thickness, DepthBias, bScreenSpace);
+		//			}
+		//		}
+		//	}
+
+		//	//PDI->DrawMesh()
+		//}
+
+		//virtual void GetDynamicMeshElements(const TArray<const FSceneView*>& Views, const FSceneViewFamily& ViewFamily, uint32 VisibilityMap, FMeshElementCollector& Collector) const override {};
 	};
 
 	FDebugRenderSceneProxy* DebugProxy = new FTileDebugRenderSceneProxy(this);
@@ -72,7 +120,7 @@ void UTileDebugDrawComponent::DrawTiles(FDebugRenderSceneProxy* DebugProxy)
 	if (TileSystem)
 	{
 		bool bHasInitializedBounds = false;
-		for (const TPair<FIntVector, uint8> Tile : TileSystem->Tiles)
+		for (const TPair<FIntVector, uint8>& Tile : TileSystem->Tiles)
 		{
 			if ((Tile.Value & BitMask) != BitMask)
 			{
@@ -151,7 +199,7 @@ void UTileDebugDrawComponent::DrawTiles(FDebugRenderSceneProxy* DebugProxy)
 				//TileMesh.Color = Color;
 
 				//DebugProxy->Meshes.Add(TileMesh);
-				DebugProxy->Boxes.Emplace(FBox(TileLocation, TileMax), Color);
+				DebugProxy->Boxes.Emplace(FBox(TileLocation, TileMax), Color, FDebugRenderSceneProxy::EDrawType::WireMesh);
 			}
 		}
 	}
