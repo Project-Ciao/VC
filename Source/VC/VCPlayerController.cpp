@@ -9,98 +9,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/LevelStreamingVolume.h"
 
-static const TCHAR* A(bool b)
-{
-	return b ? TEXT("true") : TEXT("false");
-}
-
-/**
- * Streaming settings for levels which are determined visible by level streaming volumes.
- */
-class FVisibleLevelStreamingSettings
-{
-public:
-	FVisibleLevelStreamingSettings()
-	{
-		bShouldBeVisible = false;
-		bShouldBlockOnLoad = false;
-		bShouldChangeVisibility = false;
-	}
-
-	FVisibleLevelStreamingSettings(EStreamingVolumeUsage Usage)
-	{
-		switch (Usage)
-		{
-		case SVB_Loading:
-			bShouldBeVisible = false;
-			bShouldBlockOnLoad = false;
-			bShouldChangeVisibility = false;
-			break;
-		case SVB_LoadingNotVisible:
-			bShouldBeVisible = false;
-			bShouldBlockOnLoad = false;
-			bShouldChangeVisibility = true;
-			break;
-		case SVB_LoadingAndVisibility:
-			bShouldBeVisible = true;
-			bShouldBlockOnLoad = false;
-			bShouldChangeVisibility = true;
-			break;
-		case SVB_VisibilityBlockingOnLoad:
-			bShouldBeVisible = true;
-			bShouldBlockOnLoad = true;
-			bShouldChangeVisibility = true;
-			break;
-		case SVB_BlockingOnLoad:
-			bShouldBeVisible = false;
-			bShouldBlockOnLoad = true;
-			bShouldChangeVisibility = false;
-			break;
-		default:
-			UE_LOG(LogLevel, Fatal, TEXT("Unsupported usage %i"), (int32)Usage);
-		}
-	}
-
-	FVisibleLevelStreamingSettings& operator|=(const FVisibleLevelStreamingSettings& B)
-	{
-		bShouldBeVisible |= B.bShouldBeVisible;
-		bShouldBlockOnLoad |= B.bShouldBlockOnLoad;
-		bShouldChangeVisibility |= B.bShouldChangeVisibility;
-		return *this;
-	}
-
-	bool AllSettingsEnabled() const
-	{
-		return bShouldBeVisible && bShouldBlockOnLoad;
-	}
-
-	bool ShouldBeVisible(bool bCurrentShouldBeVisible) const
-	{
-		if (bShouldChangeVisibility)
-		{
-			return bShouldBeVisible;
-		}
-		else
-		{
-			return bCurrentShouldBeVisible;
-		}
-	}
-
-	bool ShouldBlockOnLoad() const
-	{
-		return bShouldBlockOnLoad;
-	}
-
-private:
-	/** Whether level should be visible.						*/
-	bool bShouldBeVisible;
-	/** Whether level should block on load.						*/
-	bool bShouldBlockOnLoad;
-	/** Whether existing visibility settings should be changed. */
-	bool bShouldChangeVisibility;
-};
-
-
 static bool IsInStreamingLevelVolume(APlayerController* PC, ULevelStreaming* LevelStreamingObject)
 {
 	UWorld* World = PC->GetWorld();
@@ -145,7 +53,12 @@ static bool IsInStreamingLevelVolume(APlayerController* PC, ULevelStreaming* Lev
 void AVCPlayerController::ClientUpdateLevelStreamingStatus_Implementation(FName PackageName, bool bNewShouldBeLoaded,
 	bool bNewShouldBeVisible, bool bNewShouldBlockOnLoad, int32 LODIndex, FNetLevelVisibilityTransactionId TransactionId, bool bNewShouldBlockOnUnload)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Level: %s, bNewShouldBeLoaded: %s, bNewShouldBeVisible: %s"), *PackageName.ToString(), A(bNewShouldBeLoaded), A(bNewShouldBeVisible));
+	if (GetNetMode() == ENetMode::NM_DedicatedServer || GetNetMode() == ENetMode::NM_Standalone)
+	{
+		Super::ClientUpdateLevelStreamingStatus_Implementation(PackageName, bNewShouldBeLoaded, bNewShouldBeVisible, bNewShouldBlockOnLoad, LODIndex, TransactionId, bNewShouldBlockOnUnload);
+		return;
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("Level: %s, bNewShouldBeLoaded: %s, bNewShouldBeVisible: %s"), *PackageName.ToString(), A(bNewShouldBeLoaded), A(bNewShouldBeVisible));
 
 	PackageName = NetworkRemapPath(PackageName, true);
 
@@ -178,15 +91,6 @@ void AVCPlayerController::ClientUpdateLevelStreamingStatus_Implementation(FName 
 	else if (LevelStreamingObject)
 	{
 		const bool bShouldBeLoaded = IsInStreamingLevelVolume(this, LevelStreamingObject) || VisibleLevels.Contains(PackageName);
-
-		if (GetPlayerState<APlayerState>())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s: bShouldBeLoaded: %s"), *GetPlayerState<APlayerState>()->GetPlayerName(), bShouldBeLoaded ? TEXT("true") : TEXT("false"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("bShouldBeLoaded: %s"), bShouldBeLoaded ? TEXT("true") : TEXT("false"));
-		}
 
 		// If we're unloading any levels, we need to request a one frame delay of garbage collection to make sure it happens after the level is actually unloaded
 		if (LevelStreamingObject->ShouldBeLoaded() && !bNewShouldBeLoaded)
@@ -221,10 +125,10 @@ void AVCPlayerController::AddInvisibleLevel(const TSoftObjectPtr<UWorld> Level)
 	VisibleLevels.Remove(LevelPathString);
 }
 
-void AVCPlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AVCPlayerController, VisibleLevels);
-	DOREPLIFETIME(AVCPlayerController, InvisibleLevels);
-}
+//void AVCPlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//
+//	//DOREPLIFETIME(AVCPlayerController, VisibleLevels);
+//	//DOREPLIFETIME(AVCPlayerController, InvisibleLevels);
+//}

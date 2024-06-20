@@ -18,10 +18,10 @@ public:
 	virtual void ClientUpdateLevelStreamingStatus_Implementation(FName PackageName, bool bNewShouldBeLoaded, 
 		bool bNewShouldBeVisible, bool bNewShouldBlockOnLoad, int32 LODIndex, FNetLevelVisibilityTransactionId TransactionId, bool bNewShouldBlockOnUnload) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = "VC|Player Controller")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "VC|Player Controller")
 	TArray<FName> VisibleLevels;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = "VC|Player Controller")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "VC|Player Controller")
 	TArray<FName> InvisibleLevels;
 
 	UFUNCTION(BlueprintCallable, Category = "VC|Player Controller")
