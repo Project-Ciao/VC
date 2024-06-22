@@ -39,6 +39,8 @@ void UInventoryComponent::OnRegister()
 {
 	Super::OnRegister();
 
+	FillOutInventory(GetMaxInventoryItems());
+
 	for (int i = 0; i < InventoryItems.Num(); ++i)
 	{
 		FInventorySlot& InventorySlot = InventoryItems[i];
@@ -107,7 +109,7 @@ bool UInventoryComponent::AddItemToInventory(FInventorySlot& NewInventoryItem)
 		if (InventorySlot.InventoryClass == nullptr)
 		{
 			// Put the item in there
-			InventorySlot = NewInventoryItem;
+			InventorySlot.CopyItemFrom(NewInventoryItem);
 			NewInventoryItem.ItemAmount = 0;
 
 			// If it overfilled

@@ -62,6 +62,14 @@ public:
 	void SaveItemData();
 	void LoadItemData();
 
+	void CopyItemFrom(const FInventorySlot& Rhs)
+	{
+		InventoryClass = Rhs.InventoryClass;
+		ItemAmount = Rhs.ItemAmount;
+		ItemData = Rhs.ItemData;
+		ItemGuid = Rhs.ItemGuid;
+	}
+
 	// Returns the item slot split into multiple slots based on the max stack amount
 	TArray<FInventorySlot> SplitOverflowIntoMultipleSlots() const;
 
