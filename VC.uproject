@@ -45,6 +45,10 @@
 		{
 			"Name": "DatasmithContent",
 			"Enabled": false
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
 		}
 	]
 }
