@@ -1,0 +1,30 @@
+{
+	"FileVersion": 3,
+	"Version": 4,
+	"VersionName": "1.4",
+	"FriendlyName": "Thumbnail Exporter",
+	"Description": "Lets you export asset thumbnails to textures that can be used in game.",
+	"Category": "Editor",
+	"CreatedBy": "Big Cat Energising",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/975ed0d8122b4d42b01b0c695621b1b9",
+	"SupportURL": "",
+	"EngineVersion": "5.4.0",
+	"CanContainContent": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "ThumbnailExporter",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Linux",
+				"Mac"
+			]
+		}
+	],
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false
+}
