@@ -12,6 +12,6 @@ public class VCEditorTarget : TargetRules
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_4;
         bUsesSteam = true;
 
-        ExtraModuleNames.AddRange(new string[] { "VC", "VCSteam" });
+        ExtraModuleNames.AddRange(new string[] { "VC", "VCSteam", "VCUI" });
     }
 }
