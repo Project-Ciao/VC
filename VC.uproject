@@ -62,6 +62,10 @@
 			"Name": "ThumbnailExporter",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/975ed0d8122b4d42b01b0c695621b1b9"
+		},
+		{
+			"Name": "Inkpot",
+			"Enabled": true
 		}
 	]
 }

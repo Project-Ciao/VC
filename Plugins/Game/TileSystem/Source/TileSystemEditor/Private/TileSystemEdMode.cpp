@@ -15,6 +15,32 @@
 #include "TileSystemToolkitWidgetInterface.h"
 #include "TileSystemEditorModeSettings.h"
 
+class FTileSystemEdModeCommands : public TCommands<FTileSystemEdModeCommands>
+{
+public:
+	FTileSystemEdModeCommands() : TCommands <FTileSystemEdModeCommands>
+		(
+			"Tile System Editor Mode",    // Context name for fast lookup
+			FText::FromString(TEXT("Tile System Editor Mode")),  // context name for displaying
+			NAME_None,  // Parent
+			FAppStyle::GetAppStyleSetName()
+		)
+	{
+	}
+
+#define LOCTEXT_NAMESPACE ""
+	virtual void RegisterCommands() override
+	{
+		UI_COMMAND(ZLevelUp, "Z Level Up", "Moves the Z level up in the tile system editor.", EUserInterfaceActionType::Button, FInputGesture(EKeys::PageUp));
+		UI_COMMAND(ZLevelDown, "Z Level Down", "Moves the Z level down in the tile system editor.", EUserInterfaceActionType::Button, FInputGesture(EKeys::PageUp));
+	}
+#undef LOCTEXT_NAMESPACE
+
+public:
+	TSharedPtr<FUICommandInfo> ZLevelUp;
+	TSharedPtr<FUICommandInfo> ZLevelDown;
+};
+
 FTileSystemEdMode::FTileSystemEdMode()
 	: FEdMode()
 {

@@ -51,9 +51,9 @@ public:
 	virtual bool InputKey(FEditorViewportClient* InViewportClient, FViewport* InViewport, FKey InKey, EInputEvent InEvent) override;
 
 protected:
-	UTileDebugDrawComponent* TileDrawComponent;
-	UTileCursorDebugDrawComponent* TileCursorDrawComponent;
-	UTileSystemEditorModeSettings* EditorModeSettings;
+	TObjectPtr<UTileDebugDrawComponent> TileDrawComponent;
+	TObjectPtr<UTileCursorDebugDrawComponent> TileCursorDrawComponent;
+	TObjectPtr<UTileSystemEditorModeSettings> EditorModeSettings;
 
 	void SetSelectedTileSystem(AActor* Actor);
 
