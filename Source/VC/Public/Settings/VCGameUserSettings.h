@@ -6,7 +6,8 @@
 #include "GameFramework/GameUserSettings.h"
 #include "VCGameUserSettings.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_RetVal(FLinearColor, FGetLinearColor);
+class UVCGameUserSettings;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUIBackgroundColorUpdated, UVCGameUserSettings*, GameUserSettings, FLinearColor, NewColor);
 
 /**
  * 
@@ -28,9 +29,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "VC|Game User Settings")
 	void SetUIBackgroundColor(FLinearColor NewUIBackgroundColor);
 
-	/** A bindable delegate for background color*/
 	UPROPERTY()
-	FGetLinearColor UIBackgroundColorDelegate;
+	FOnUIBackgroundColorUpdated OnUIBackgroundColorUpdated;
 
 protected:
 	UPROPERTY(config)

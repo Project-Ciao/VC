@@ -11,12 +11,13 @@ UVCGameUserSettings::UVCGameUserSettings(const FObjectInitializer& ObjectInitial
 
 UVCGameUserSettings* UVCGameUserSettings::Get()
 {
-	return GEngine ? CastChecked<UVCGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr;
+	return GEngine ? Cast<UVCGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr;
 }
 
 void UVCGameUserSettings::SetUIBackgroundColor(FLinearColor NewUIBackgroundColor)
 {
 	UIBackgroundColor = NewUIBackgroundColor;
+	OnUIBackgroundColorUpdated.Broadcast(this, NewUIBackgroundColor);
 }
 
 void UVCGameUserSettings::SetToDefaults()

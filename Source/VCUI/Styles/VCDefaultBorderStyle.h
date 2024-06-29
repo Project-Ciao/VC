@@ -6,6 +6,8 @@
 #include "CommonBorder.h"
 #include "VCDefaultBorderStyle.generated.h"
 
+class UVCGameUserSettings;
+
 /**
  * 
  */
@@ -16,4 +18,11 @@ class VCUI_API UVCDefaultBorderStyle : public UCommonBorderStyle
 	
 public:
 	UVCDefaultBorderStyle();
+
+protected:
+	UFUNCTION()
+	void OnPostEngineInit();
+
+	UFUNCTION()
+	void OnUIBackgroundColorUpdated(UVCGameUserSettings* GameUserSettings, FLinearColor NewColor);
 };

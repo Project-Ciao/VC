@@ -13,7 +13,12 @@ public class VCUI : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
-				"VC"
+				"VC",
+				"FieldNotification",
+				"Slate",
+				"SlateCore",
+				"UMG",
+				"CommonUI"
 			});
 		
 		PrivateDependencyModuleNames.AddRange(new string[]
