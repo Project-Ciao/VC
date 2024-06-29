@@ -88,3 +88,5 @@ Releases/*
 
 hooks/
 lfs/
+
+!Plugins/Game/Inkpot/ThirdParty/InkCommandLine/inklecate.exe
