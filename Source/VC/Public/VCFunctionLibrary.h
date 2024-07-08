@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "VCFunctionLibrary.generated.h"
 
+class UInkpotStory;
+
 /**
  * 
  */
@@ -17,4 +19,7 @@ class VC_API UVCFunctionLibrary : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintPure, Category = "VC|Function Library", meta = (KeyWords = "Class Default Object GetClassDefaultObject", DeterminesOutputType = "Class"))
 	static UObject* GetCDO(UClass* Class);
+
+	UFUNCTION(BlueprintCallable, Category = "Inkpot|Story")
+	static void BindExternalStoryFunctionByName(UInkpotStory* Story, const FString& InStoryFunctionName, UObject* Object, FName InObjectFunctionName, bool bInLookAheadSafe);
 };

@@ -3,6 +3,8 @@
 
 #include "VCFunctionLibrary.h"
 
+#include "Inkpot/InkpotStory.h"
+
 UObject* UVCFunctionLibrary::GetCDO(UClass* Class)
 {
 	if (Class)
@@ -11,4 +13,25 @@ UObject* UVCFunctionLibrary::GetCDO(UClass* Class)
 	}
 
 	return nullptr;
+}
+
+void UVCFunctionLibrary::BindExternalStoryFunctionByName(UInkpotStory* Story, const FString& InStoryFunctionName, UObject* Object, FName InObjectFunctionName, bool bInLookAheadSafe)
+{
+	if (Story == nullptr)
+	{
+		return;
+	}
+
+	if (Object == nullptr)
+	{
+		return;
+	}
+
+	UFunction* const Func = Object->FindFunction(InObjectFunctionName);
+	if (Func)
+	{
+		FInkpotExternalFunction Delegate;
+		Delegate.BindUFunction(Object, InObjectFunctionName);
+		Story->BindExternalFunction(InStoryFunctionName, Delegate, bInLookAheadSafe);
+	}
 }
