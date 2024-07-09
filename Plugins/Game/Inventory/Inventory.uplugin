@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "Inventory",
-	"Description": "",
+	"Description": "Component based item inventory system.",
 	"Category": "Gameplay",
 	"CreatedBy": "",
 	"CreatedByURL": "",

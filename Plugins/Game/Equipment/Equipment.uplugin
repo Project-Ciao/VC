@@ -2,21 +2,21 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "Interact",
-	"Description": "Adds a component-based system for interacting with actors in the game world.",
+	"FriendlyName": "Equipment",
+	"Description": "",
 	"Category": "Gameplay",
 	"CreatedBy": "",
 	"CreatedByURL": "",
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
-	"CanContainContent": true,
+	"CanContainContent": false,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "Interact",
+			"Name": "Equipment",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
