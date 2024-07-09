@@ -14,6 +14,11 @@ EXTERNAL GiveEgg()
 Yeah, an egg.
 This egg births a villager if you care for it properly.
 But I don't want it, please take it.
++ [I understand] -> take_egg_choice
++ [Why don't you want it?]
+Raising an egg requires a home and I'm just not ready to hang up my spurs yet.
+I'm a nomad, this egg is incompatible with my lifestyle.
+So can you take this from me?
 -> take_egg_choice
 
 === refuse_egg ===
