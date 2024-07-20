@@ -64,6 +64,7 @@ Build/*/**
 !Build/*/PakBlacklist*.txt
 !Build/push_linux_beta.sh
 !Build/push_windows_beta.sh
+!Build/Scripts/*
 
 # Don't ignore icon files in Build
 !Build/**/*.ico
