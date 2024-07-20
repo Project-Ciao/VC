@@ -7,7 +7,7 @@
 UVCBorder::UVCBorder(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	Padding = FMargin(48.0, 64.0);
+	SetPadding(FMargin(48.0, 64.0));
 	SetStyle(UVCDefaultBorderStyle::StaticClass());
 }
 

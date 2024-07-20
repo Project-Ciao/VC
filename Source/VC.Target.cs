@@ -10,8 +10,8 @@ public class VCTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_4;
-		bUsesSteam = true;
+		bUsesSteam = false;
 
-		ExtraModuleNames.AddRange(new string[] { "VC", "VCSteam", "VCUI" });
-	}
+		ExtraModuleNames.AddRange(new string[] { "VC", "VCUI" });
+    }
 }

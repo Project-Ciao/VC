@@ -13,14 +13,6 @@
 			]
 		},
 		{
-			"Name": "VCSteam",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
-		},
-		{
 			"Name": "VCUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
@@ -36,10 +28,6 @@
 			"TargetAllowList": [
 				"Editor"
 			]
-		},
-		{
-			"Name": "OnlineSubsystemSteam",
-			"Enabled": true
 		},
 		{
 			"Name": "ModuleGeneration",
@@ -66,6 +54,10 @@
 		{
 			"Name": "Inkpot",
 			"Enabled": true
+		},
+		{
+			"Name": "AdvancedSteamSessions",
+			"Enabled": false
 		}
 	]
 }

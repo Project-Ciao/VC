@@ -54,7 +54,7 @@ void UInteractComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		return;
 	}
 
-	if (!PawnOwner->IsControlled())
+	if (!PawnOwner->IsPawnControlled())
 	{
 		return;
 	}
