@@ -77,9 +77,15 @@ class INVENTORY_API UInventoryComponent : public UActorComponent
 	UFUNCTION(BlueprintCallable, Category = "Inventory Component", meta = (DisplayName = "Remove Item Amount From Slot"))
 		bool K2_RemoveItemAmountFromSlot(int32 Slot, int32 Amount) { return RemoveItemAmountFromSlot(Slot, Amount); };
 
-	// Returns true if it was able to remove the amount from the slot
+	// Returns true if it was able to remove the total amount
 	UFUNCTION(BlueprintCallable, Category = "Inventory Component")
-		void RemoveItemAmountByClass(TSoftClassPtr<UObject> ItemClass, int32 Amount);
+		bool RemoveItemAmountByClass(TSoftClassPtr<UObject> ItemClass, int32 Amount);
+
+	// Removes the items from the inventory.
+	// Will throw if it wasn't able to remove all items, so check
+	// with CanAffordItemRemoval before calling this function
+	UFUNCTION(BlueprintCallable, Category = "Inventory Component")
+		void RemoveItems(TArray<FInventorySlot> ItemsToRemove);
 
 	// Returns true if the slot had an item
 	UFUNCTION(BlueprintCallable, Category = "Inventory Component")

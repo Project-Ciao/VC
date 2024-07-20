@@ -291,7 +291,7 @@ bool UInventoryComponent::CanAffordItemRemoval(TArray<FInventorySlot> ItemsToRem
 				if (InventorySlot.ItemAmount <= 0)
 				{
 					RemoveSlot.ItemAmount = -InventorySlot.ItemAmount;
-					InventorySlot.EmptySlot();
+					//InventorySlot.EmptySlot();
 				}
 
 				if (RemoveSlot.ItemAmount == 0)
@@ -395,7 +395,7 @@ FText UInventoryComponent::GetInventoryName_Implementation()
 	return FText::GetEmpty();
 }
 
-void UInventoryComponent::RemoveItemAmountByClass(TSoftClassPtr<UObject> ItemClass, int32 Amount)
+bool UInventoryComponent::RemoveItemAmountByClass(TSoftClassPtr<UObject> ItemClass, int32 Amount)
 {
 	CheckSlotsValid();
 
@@ -425,7 +425,46 @@ void UInventoryComponent::RemoveItemAmountByClass(TSoftClassPtr<UObject> ItemCla
 		}
 	}
 
-	check(Amount == 0);
+	return Amount == 0;
+}
+
+void UInventoryComponent::RemoveItems(TArray<FInventorySlot> ItemsToRemove)
+{
+	CheckSlotsValid();
+
+	for (FInventorySlot& RemoveSlot : ItemsToRemove)
+	{
+		for (int32 i = InventoryItems.Num() - 1; i >= 0; i--)
+		{
+			FInventorySlot& InventorySlot = InventoryItems[i];
+
+			if (!InventorySlot.IsEmpty() && InventorySlot.InventoryClass == RemoveSlot.InventoryClass)
+			{
+				InventorySlot.ItemAmount = InventorySlot.ItemAmount - RemoveSlot.ItemAmount;
+				RemoveSlot.ItemAmount = 0;
+
+				if (InventorySlot.ItemAmount <= 0)
+				{
+					RemoveSlot.ItemAmount = -InventorySlot.ItemAmount;
+					InventorySlot.EmptySlot();
+				}
+
+				if (RemoveSlot.ItemAmount == 0)
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	// Check to make sure that all the items were removed
+	for (FInventorySlot& RemoveSlot : ItemsToRemove)
+	{
+		if (RemoveSlot.ItemAmount > 0)
+		{
+			checkNoEntry();
+		}
+	}
 }
 
 bool UInventoryComponent::EmptySlotByIndex(int32 Slot)
