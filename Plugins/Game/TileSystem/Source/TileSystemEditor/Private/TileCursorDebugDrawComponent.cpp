@@ -59,7 +59,7 @@ void UTileCursorDebugDrawComponent::Update(FDebugRenderSceneProxy* DebugProxy)
 	Bounds.Max = FVector::Zero();
 
 	bool bHasInitializedBounds = false;
-	if (TileDrawComponent && TileDrawComponent->GetTileSystem())
+	if (TileDrawComponent.Get() && TileDrawComponent->GetTileSystem())
 	{
 		FIntVector MinValue;
 		MinValue.X = FMath::Min(TileSelection.Key.X, TileSelection.Value.X);

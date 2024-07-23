@@ -35,3 +35,8 @@ void UVCFunctionLibrary::BindExternalStoryFunctionByName(UInkpotStory* Story, co
 		Story->BindExternalFunction(InStoryFunctionName, Delegate, bInLookAheadSafe);
 	}
 }
+
+UWorld* UVCFunctionLibrary::GetWorld(UObject* WorldContextObject)
+{
+	return GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+}

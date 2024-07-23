@@ -22,4 +22,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inkpot|Story")
 	static void BindExternalStoryFunctionByName(UInkpotStory* Story, const FString& InStoryFunctionName, UObject* Object, FName InObjectFunctionName, bool bInLookAheadSafe);
+
+	UFUNCTION(BlueprintPure, Category = "VC|Function Library", meta = (WorldContext = "WorldContextObject"))
+	static UWorld* GetWorld(UObject* WorldContextObject);
 };

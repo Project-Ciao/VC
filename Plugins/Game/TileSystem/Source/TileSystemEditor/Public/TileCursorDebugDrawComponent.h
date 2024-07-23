@@ -27,7 +27,7 @@ public:
 
 protected:
 	UPROPERTY()
-		UTileDebugDrawComponent* TileDrawComponent;
+		TWeakObjectPtr<UTileDebugDrawComponent> TileDrawComponent;
 
 	TPair<FIntVector, FIntVector> TileSelection;
 	FBox Bounds;
