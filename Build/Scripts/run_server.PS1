@@ -1,0 +1,1 @@
+& ..\WindowsServer\VCServer.exe -log -ExecCmds="net.IgnoreNetworkChecksumMismatch 1"
