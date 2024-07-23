@@ -62,7 +62,7 @@ protected:
 
 	bool bIsDragging;
 
-	UUserWidget* EdWidgetBlueprint;
+	TObjectPtr<UUserWidget> EdWidgetBlueprint;
 
 	AActor* EditedActor;
 	UTileSystemComponent* EditedTileSystem;
