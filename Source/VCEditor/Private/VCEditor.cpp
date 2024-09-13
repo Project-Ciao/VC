@@ -24,8 +24,6 @@
 
 #include "TimeOfDay/TimeOfDayControllerInterface.h"
 
-UE_DISABLE_OPTIMIZATION
-
 static float TimeOfDayPlayInEditorRate = 1.f;
 static bool bTimeOfDayPlayInEditor = false;
 
@@ -244,8 +242,6 @@ bool FVCEditor::Tick(float DeltaTime)
 	}
 	return true;
 }
-
-UE_ENABLE_OPTIMIZATION
 
 #undef LOCTEXT_NAMESPACE
 	
