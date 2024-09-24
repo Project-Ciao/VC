@@ -27,13 +27,33 @@ void UInteractSettings::EndHighlight(UInteractComponent* InteractComponent, UInt
 	}
 }
 
-void UInteractSettings::StartCustomDepthHighlight(UInteractableComponent* InteractableComponent, int32 BitMask) const
+static TArray<UPrimitiveComponent*> GetComponentsToHighlight(const UInteractableComponent* InteractableComponent)
 {
 	TArray<UPrimitiveComponent*> OwnerComponents;
-	InteractableComponent->GetOwner()->GetComponents<UPrimitiveComponent>(OwnerComponents);
+
+	TArray<UPrimitiveComponent*> HighlightComponents = InteractableComponent->GetHighlightComponents();
+	if (HighlightComponents.Num() > 0)
+	{
+		OwnerComponents = HighlightComponents;
+	}
+	else
+	{
+		InteractableComponent->GetOwner()->GetComponents<UPrimitiveComponent>(OwnerComponents);
+	}
+
+	return OwnerComponents;
+}
+
+void UInteractSettings::StartCustomDepthHighlight(UInteractableComponent* InteractableComponent, int32 BitMask) const
+{
+	TArray<UPrimitiveComponent*> OwnerComponents = GetComponentsToHighlight(InteractableComponent);
 
 	for (UPrimitiveComponent* OwnerComponent : OwnerComponents)
 	{
+		if (OwnerComponent == nullptr)
+		{
+			continue;
+		}
 		OwnerComponent->SetRenderCustomDepth(true);
 		OwnerComponent->SetCustomDepthStencilWriteMask(ERendererStencilMask::ERSM_255);
 		OwnerComponent->SetCustomDepthStencilValue(BitMask | OwnerComponent->CustomDepthStencilValue);
@@ -42,11 +62,15 @@ void UInteractSettings::StartCustomDepthHighlight(UInteractableComponent* Intera
 
 void UInteractSettings::EndCustomDepthHighlight(UInteractableComponent* InteractableComponent, int32 BitMask) const
 {
-	TArray<UPrimitiveComponent*> OwnerComponents;
-	InteractableComponent->GetOwner()->GetComponents<UPrimitiveComponent>(OwnerComponents);
+	TArray<UPrimitiveComponent*> OwnerComponents = GetComponentsToHighlight(InteractableComponent);
 
 	for (UPrimitiveComponent* OwnerComponent : OwnerComponents)
 	{
+		if (OwnerComponent == nullptr)
+		{
+			continue;
+		}
+
 		OwnerComponent->SetCustomDepthStencilValue(~(BitMask) &OwnerComponent->CustomDepthStencilValue);
 		if (OwnerComponent->CustomDepthStencilValue == 0)
 		{

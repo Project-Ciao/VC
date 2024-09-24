@@ -42,4 +42,7 @@ public:
 
 	static const UInteractSettings* Get();
 	static UInteractSettings* GetMutable();
+
+	UFUNCTION(BlueprintPure, Category = "Interact Settings")
+	static UInteractSettings* GetInteractSettings() { return GetMutable(); };
 };

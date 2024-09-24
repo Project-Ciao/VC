@@ -8,6 +8,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "AnimNotify_Footstep.generated.h"
 
+struct FMaterialFootstep;
+
 /**
  * 
  */
@@ -23,6 +25,8 @@ public:
 
 	virtual FString GetNotifyName_Implementation() const override;
 
+	virtual bool TraceFootstep(FMaterialFootstep& Footstep);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
 	FName FootSocketName;
 
@@ -33,7 +37,11 @@ public:
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace")
-	float TraceLength = 50.0f;
+	float TraceLength;
+
+	// The half size of the box used for box tracing
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace")
+	FVector TraceHalfSize;
 
 	// Step, jump, land, etc
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Footstep", meta = (Categories = "VC"))

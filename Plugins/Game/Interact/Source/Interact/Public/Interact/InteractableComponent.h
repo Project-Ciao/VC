@@ -12,7 +12,7 @@ UENUM(BlueprintType)
 enum class EUseReplicationPolicy : uint8 {
 	RunLocally	UMETA(DisplayName = "Run locally (Non replicated)"),
 	Server		UMETA(DisplayName = "Run on server (Replicated)"),
-	Both		UMETA(DisplayName = "Run on both client and server"),
+	Both		UMETA(DisplayName = "Both (run locally (if client interacts) and on server)"),
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUse, UInteractComponent*, InteractComponent);
@@ -71,6 +71,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interactable Component")
 		FGetInteractableUseName GetUseNameDelegate;
 
+	TArray<UPrimitiveComponent*> GetHighlightComponents() const { return HighlightComponents; }
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interactable Component")
 		FText UseName;
@@ -84,4 +86,8 @@ protected:
 	// If empty, then all overlaps on the parent actor can trigger this interactable component
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interactable Component")
 		TArray<UPrimitiveComponent*> InteractTriggers;
+
+	// Which components to highlight on this actor. If empty, then it will highlight all primitives on this actor
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interactable Component")
+		TArray<UPrimitiveComponent*> HighlightComponents;
 };

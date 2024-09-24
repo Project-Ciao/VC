@@ -10,12 +10,20 @@
 UE_DEFINE_GAMEPLAY_TAG_STATIC(Tag_Footstep_Default, "VC.Animation.Notify.FootstepType.Step");
 UE_DEFINE_GAMEPLAY_TAG_STATIC(Tag_Foot_Default, "VC.Animation.Notify.Foot.Left");
 
+static TAutoConsoleVariable<bool> CVarDebugShowFootstepTraces(TEXT("VC.Animation.DebugFootstepTraces"),
+	false,
+	TEXT("Show AnimNotify footstep traces"),
+	ECVF_Cheat);
+
 UAnimNotify_Footstep::UAnimNotify_Footstep(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	FootSocketName = FName("Base-HumanLFoot");
 	FootstepType = Tag_Footstep_Default;
 	Foot = Tag_Foot_Default;
+
+	TraceLength = 50.f;
+	TraceHalfSize = FVector(4.f);
 }
 
 void UAnimNotify_Footstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
@@ -31,21 +39,13 @@ void UAnimNotify_Footstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 		return;
 	}
 
-	UWorld* World = MeshComp->GetWorld();
-	check(World);
-
-	const FVector FootLocation = MeshComp->GetSocketLocation(FootSocketName);
-	const FRotator FootRotation = MeshComp->GetSocketRotation(FootSocketName);
-	const FVector TraceEnd = FootLocation - MeshOwner->GetActorUpVector() * TraceLength;
-
 	FMaterialFootstep Footstep;
 	Footstep.Animation = Animation;
 	Footstep.MeshComp = MeshComp;
 	Footstep.FootstepType = FootstepType;
 	Footstep.Foot = Foot;
 
-	if (UKismetSystemLibrary::LineTraceSingle(MeshOwner /*used by bIgnoreSelf*/, FootLocation, TraceEnd, TraceChannel, true /*bTraceComplex*/, MeshOwner->Children,
-		DrawDebugType, Footstep.Hit, true /*bIgnoreSelf*/))
+	if (TraceFootstep(Footstep))
 	{
 		if (!Footstep.Hit.PhysMaterial.Get())
 		{
@@ -62,5 +62,25 @@ void UAnimNotify_Footstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 FString UAnimNotify_Footstep::GetNotifyName_Implementation() const
 {
 	return FString::Printf(TEXT("Footstep Type: %s\nFoot: %s"), *FootstepType.ToString(), *Foot.ToString());
+}
+
+bool UAnimNotify_Footstep::TraceFootstep(FMaterialFootstep& Footstep)
+{
+	AActor* MeshOwner = Footstep.MeshComp->GetOwner();
+	if (!MeshOwner)
+	{
+		return false;
+	}
+
+	const FVector FootLocation = Footstep.MeshComp->GetSocketLocation(FootSocketName);
+	const FRotator FootRotation = Footstep.MeshComp->GetComponentRotation(); //Footstep.MeshComp->GetSocketRotation(FootSocketName);
+	const FVector TraceEnd = FootLocation - MeshOwner->GetActorUpVector() * TraceLength;
+
+	const EDrawDebugTrace::Type FootstepDrawDebugType = CVarDebugShowFootstepTraces.GetValueOnGameThread() ? EDrawDebugTrace::ForDuration : DrawDebugType.GetValue();
+
+	return UKismetSystemLibrary::BoxTraceSingle(MeshOwner, FootLocation, TraceEnd, TraceHalfSize, FootRotation, TraceChannel, true, MeshOwner->Children, FootstepDrawDebugType, Footstep.Hit, true);
+
+	//return UKismetSystemLibrary::LineTraceSingle(MeshOwner /*used by bIgnoreSelf*/, FootLocation, TraceEnd, TraceChannel, true /*bTraceComplex*/, MeshOwner->Children,
+	//	DrawDebugType, Footstep.Hit, true /*bIgnoreSelf*/);
 }
 

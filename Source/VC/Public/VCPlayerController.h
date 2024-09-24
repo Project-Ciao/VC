@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "VCPlayerController.generated.h"
 
+class ULevelStreaming;
+
 /**
  * 
  */
@@ -29,4 +31,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "VC|Player Controller")
 	void AddInvisibleLevel(const TSoftObjectPtr<UWorld> Level);
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	UFUNCTION(BlueprintPure, Category = "VC|Player Controller")
+	virtual bool AreAnyLevelsLoading() const;
+
+protected:
+	// A set of levels that have been requested to load, but aren't fully loaded in
+	UPROPERTY()
+	TArray<TWeakObjectPtr<ULevelStreaming>> LevelsLoading;
 };

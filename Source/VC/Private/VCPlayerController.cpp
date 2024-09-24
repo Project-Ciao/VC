@@ -53,11 +53,11 @@ static bool IsInStreamingLevelVolume(APlayerController* PC, ULevelStreaming* Lev
 void AVCPlayerController::ClientUpdateLevelStreamingStatus_Implementation(FName PackageName, bool bNewShouldBeLoaded,
 	bool bNewShouldBeVisible, bool bNewShouldBlockOnLoad, int32 LODIndex, FNetLevelVisibilityTransactionId TransactionId, bool bNewShouldBlockOnUnload)
 {
-	if (GetNetMode() == ENetMode::NM_DedicatedServer || GetNetMode() == ENetMode::NM_Standalone)
-	{
-		Super::ClientUpdateLevelStreamingStatus_Implementation(PackageName, bNewShouldBeLoaded, bNewShouldBeVisible, bNewShouldBlockOnLoad, LODIndex, TransactionId, bNewShouldBlockOnUnload);
-		return;
-	}
+	//if (GetNetMode() == ENetMode::NM_DedicatedServer || GetNetMode() == ENetMode::NM_Standalone)
+	//{
+	//	Super::ClientUpdateLevelStreamingStatus_Implementation(PackageName, bNewShouldBeLoaded, bNewShouldBeVisible, bNewShouldBlockOnLoad, LODIndex, TransactionId, bNewShouldBlockOnUnload);
+	//	return;
+	//}
 	//UE_LOG(LogTemp, Warning, TEXT("Level: %s, bNewShouldBeLoaded: %s, bNewShouldBeVisible: %s"), *PackageName.ToString(), A(bNewShouldBeLoaded), A(bNewShouldBeVisible));
 
 	PackageName = NetworkRemapPath(PackageName, true);
@@ -98,12 +98,25 @@ void AVCPlayerController::ClientUpdateLevelStreamingStatus_Implementation(FName 
 			GEngine->DelayGarbageCollection();
 		}
 
-		LevelStreamingObject->SetShouldBeLoaded((!InvisibleLevels.Contains(PackageName) && bNewShouldBeLoaded) && bShouldBeLoaded);
+		const bool ShouldBeLoaded = (!InvisibleLevels.Contains(PackageName) && bNewShouldBeLoaded) && bShouldBeLoaded;
+		LevelStreamingObject->SetShouldBeLoaded(ShouldBeLoaded);
 		LevelStreamingObject->SetShouldBeVisible((!InvisibleLevels.Contains(PackageName) && bNewShouldBeVisible) && bShouldBeLoaded);
 		LevelStreamingObject->bShouldBlockOnLoad = bNewShouldBlockOnLoad;
 		LevelStreamingObject->bShouldBlockOnUnload = bNewShouldBlockOnUnload;
 		LevelStreamingObject->SetLevelLODIndex(LODIndex);
 		LevelStreamingObject->UpdateNetVisibilityTransactionState((!InvisibleLevels.Contains(PackageName) && bNewShouldBeVisible) && bShouldBeLoaded, TransactionId);
+
+		if (ShouldBeLoaded)
+		{
+			if (!LevelStreamingObject->IsLevelLoaded())
+			{
+				LevelsLoading.AddUnique(LevelStreamingObject);
+			}
+		}
+		else
+		{
+			LevelsLoading.Remove(LevelStreamingObject);
+		}
 	}
 	else
 	{
@@ -123,6 +136,31 @@ void AVCPlayerController::AddInvisibleLevel(const TSoftObjectPtr<UWorld> Level)
 	const FName LevelPathString = Level.ToSoftObjectPath().GetAssetPath().GetPackageName();
 	InvisibleLevels.AddUnique(LevelPathString);
 	VisibleLevels.Remove(LevelPathString);
+}
+
+void AVCPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	for (int32 i = LevelsLoading.Num() - 1; i >= 0; --i)
+	{
+		if (LevelsLoading[i].IsValid() == false)
+		{
+			LevelsLoading.RemoveAt(i);
+		}
+		else
+		{
+			if (LevelsLoading[i]->IsLevelLoaded())
+			{
+				LevelsLoading.RemoveAt(i);
+			}
+		}
+	}
+}
+
+bool AVCPlayerController::AreAnyLevelsLoading() const
+{
+	return LevelsLoading.Num() > 0;
 }
 
 //void AVCPlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const

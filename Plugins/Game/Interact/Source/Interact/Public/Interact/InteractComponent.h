@@ -29,9 +29,11 @@ class INTERACT_API UInteractComponent : public UActorComponent
 public:
 	UInteractComponent();
 
+	// Calls BeginUse on whatever component is currently highlighted. Call this function to interact
 	UFUNCTION(BlueprintCallable, Category = "Interact Component")
 		void InputBeginUse();
 
+	// Calls EndUse on whatever component is currently highlighted. Call this function to end interaction
 	UFUNCTION(BlueprintCallable, Category = "Interact Component")
 		void InputEndUse();
 
@@ -69,7 +71,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interact Component|Trace")
 		TEnumAsByte<ECollisionChannel> TraceChannel;
 
-	// Draws the trace
+	// Draws the trace if the trace method is Line Trace
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interact Component|Trace")
 		bool bDebugTrace;
 
@@ -77,7 +79,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Interact Component")
 		bool bRemoveHighlightOnPawnOwnerUnposesss;
 
-	// Returns true if this belongs to 
+	// Returns true if this interact component's owner is locally controlled
 	UFUNCTION(BlueprintPure, Category = "Interact Component")
 		bool IsLocallyControlled() const;
 
@@ -85,15 +87,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Interact Component")
 		TArray<UInteractableComponent*> CurrentInteractableComponents;
 
+	// The component that has had BeginUse called on it
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Interact Component")
 		UInteractableComponent* InteractedComponent;
 
-	// Call this to "Begin Using" a highlighted useable object
-	UFUNCTION(BlueprintCallable, Category = "Interact Component")
+	UFUNCTION()
 		void BeginUse(UInteractableComponent* InteractableComponent);
 
-	// Call this to "End Using" a highlighted useable object
-	UFUNCTION(BlueprintCallable, Category = "Interact Component")
+	UFUNCTION()
 		void EndUse(UInteractableComponent* InteractableComponent);
 		
 	UFUNCTION(Server, Reliable, WithValidation)
