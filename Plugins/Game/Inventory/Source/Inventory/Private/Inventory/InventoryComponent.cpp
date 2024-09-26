@@ -610,7 +610,7 @@ void UInventoryComponent::CheckSlotsValid() const
 		{
 			bool bAlreadyInSet = false;
 			SlotIDs.Add(Slot.ItemGuid, &bAlreadyInSet);
-			check(bAlreadyInSet == false);
+			ensure(bAlreadyInSet == false);
 		}
 	}
 }

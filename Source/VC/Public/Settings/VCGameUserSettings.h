@@ -33,7 +33,7 @@ public:
 	FOnUIBackgroundColorUpdated OnUIBackgroundColorUpdated;
 
 protected:
-	UPROPERTY(config)
+	UPROPERTY(config, EditAnywhere, Category = "UI")
 	FLinearColor UIBackgroundColor;
 
 public:

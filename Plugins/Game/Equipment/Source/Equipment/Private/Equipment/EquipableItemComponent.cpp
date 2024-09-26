@@ -131,7 +131,8 @@ void UEquipableItemComponent::BindInputs()
 			GetOwner()->EnableInput(PC);
 		}
 	}
-	else if (APawn* Pawn = GetEquipmentHolderAsPawn())
+	
+	if (APawn* Pawn = GetEquipmentHolderAsPawn())
 	{
 		Pawn->ReceiveControllerChangedDelegate.AddUniqueDynamic(this, &ThisClass::OnEquipmentHolderReceivePossess);
 	}

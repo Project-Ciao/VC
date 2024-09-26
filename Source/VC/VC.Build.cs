@@ -8,7 +8,17 @@ public class VC : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Inkpot", "GameplayTags" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"EnhancedInput",
+			"Inkpot",
+			"GameplayTags",
+			"Foliage",
+			"DeveloperSettings"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 	}
