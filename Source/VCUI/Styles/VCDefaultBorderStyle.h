@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonBorder.h"
+#include "Delegates/Delegate.h"
 #include "VCDefaultBorderStyle.generated.h"
 
 class UVCGameUserSettings;
@@ -18,6 +19,8 @@ class VCUI_API UVCDefaultBorderStyle : public UCommonBorderStyle
 	
 public:
 	UVCDefaultBorderStyle();
+
+	FSimpleMulticastDelegate OnStyleChange;
 
 protected:
 	UFUNCTION()

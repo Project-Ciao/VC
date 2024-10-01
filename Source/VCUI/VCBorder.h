@@ -17,6 +17,9 @@ class VCUI_API UVCBorder : public UCommonBorder
 public:
 	UVCBorder(const FObjectInitializer& ObjectInitializer);
 
+	UFUNCTION()
+	void OnStyleChange();
+
 #if WITH_EDITOR
 	//virtual void OnCreationFromPalette() override;
 	const FText GetPaletteCategory() override;

@@ -31,3 +31,12 @@ void UVCGameUserSettings::ApplyNonResolutionSettings()
 {
 	Super::ApplyNonResolutionSettings();
 }
+
+#if WITH_EDITOR
+void UVCGameUserSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	OnUIBackgroundColorUpdated.Broadcast(this, UIBackgroundColor);
+}
+#endif

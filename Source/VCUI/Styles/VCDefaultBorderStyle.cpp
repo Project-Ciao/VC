@@ -21,6 +21,7 @@ void UVCDefaultBorderStyle::OnPostEngineInit()
 		Background.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
 		Background.OutlineSettings.CornerRadii.Set(64.0, 64.0, 64.0, 64.0);
 		Background.TintColor = FSlateColor(UVCGameUserSettings::Get()->GetUIBackgroundColor());
+		Background.OutlineSettings.Color = FSlateColor(UVCGameUserSettings::Get()->GetUIBackgroundColor());
 
 		UVCGameUserSettings::Get()->OnUIBackgroundColorUpdated.AddUniqueDynamic(this, &ThisClass::OnUIBackgroundColorUpdated);
 	}
@@ -32,4 +33,7 @@ void UVCDefaultBorderStyle::OnUIBackgroundColorUpdated(UVCGameUserSettings* Game
 	Background.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
 	Background.OutlineSettings.CornerRadii.Set(64.0, 64.0, 64.0, 64.0);
 	Background.TintColor = FSlateColor(NewColor);
+	Background.OutlineSettings.Color = FSlateColor(NewColor);
+
+	OnStyleChange.Broadcast();
 }

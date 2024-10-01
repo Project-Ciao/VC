@@ -33,8 +33,12 @@ public:
 	FOnUIBackgroundColorUpdated OnUIBackgroundColorUpdated;
 
 protected:
-	UPROPERTY(config, EditAnywhere, Category = "UI")
+	UPROPERTY(config, EditAnywhere, Category = "Game User Settings Defaults|UI")
 	FLinearColor UIBackgroundColor;
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 
 public:
 	//~UGameUserSettings interface
