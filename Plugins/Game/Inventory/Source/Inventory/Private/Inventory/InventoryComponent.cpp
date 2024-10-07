@@ -597,6 +597,7 @@ bool UInventoryComponent::GetInventorySlot(int32 Index, FInventorySlot& OutSlot)
 	}
 }
 
+UE_DISABLE_OPTIMIZATION
 void UInventoryComponent::CheckSlotsValid() const
 {
 	TSet<FGuid> SlotIDs;
@@ -606,6 +607,7 @@ void UInventoryComponent::CheckSlotsValid() const
 	{
 		Slot.CheckValid();
 
+		// This checks to make sure each slot has a unique Item GUID
 		if (Slot.ItemGuid.IsValid())
 		{
 			bool bAlreadyInSet = false;
@@ -614,6 +616,7 @@ void UInventoryComponent::CheckSlotsValid() const
 		}
 	}
 }
+UE_ENABLE_OPTIMIZATION
 
 bool UInventoryComponent::GetSlotByGUID(FGuid ID, FInventorySlot& OutSlot, int32& OutIndex)
 {
