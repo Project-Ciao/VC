@@ -15,6 +15,11 @@ struct FVCInputMap
 {
 	GENERATED_BODY()
 
+	FVCInputMap()
+		: MappingContext(nullptr), Priority(0), Options()
+	{
+	}
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VC|Input Map")
 	UInputMappingContext* MappingContext;
 
@@ -39,7 +44,10 @@ struct FVCInputMap
 	}
 };
 
-UCLASS( ClassGroup=(Input), meta=(BlueprintSpawnableComponent) )
+class UVCInputMappingContextComponent;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInputMappingContextPushedPopped, UVCInputMappingContextComponent*, Component, APlayerController*, PC);
+
+UCLASS( Blueprintable, ClassGroup=(Input), meta=(BlueprintSpawnableComponent) )
 class VC_API UVCInputMappingContextComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -50,6 +58,34 @@ public:
 	TArray<FVCInputMap> GetInputMaps() const { return InputMaps; }
 
 	static TArray<FVCInputMap> GetInputMapsFromComponents(const TArray<UVCInputMappingContextComponent*>& Components);
+
+	UFUNCTION(BlueprintCallable, Category = "Input Mapping Context Component")
+	bool PushInputMappingContext(APlayerController* Player);
+
+	UFUNCTION(BlueprintCallable, Category = "Input Mapping Context Component")
+	bool PopInputMappingContext();
+
+	UFUNCTION(BlueprintCallable, Category = "Input Mapping Context Component")
+	void ListenForPawnControllerChange(APawn* Pawn);
+
+	UFUNCTION(BlueprintCallable, Category = "Input Mapping Context Component")
+	void UnlistenToPawnControllerChange(APawn* Pawn);
+
+	// Get the pawn to bind input to
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Input Mapping Context Component")
+	APawn* GetInputPawn();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Input Mapping Context Component", meta=(DisplayName="On Input Mapping Context Pushed"))
+	void BP_OnInputMappingContextPushed(APlayerController* PC);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Input Mapping Context Component", meta = (DisplayName = "On Input Mapping Context Popped"))
+	void BP_OnInputMappingContextPopped(APlayerController* PC);
+
+	UPROPERTY(BlueprintAssignable, Category = "Input Mapping Context Component")
+	FOnInputMappingContextPushedPopped OnInputMappingContextPushed;
+
+	UPROPERTY(BlueprintAssignable, Category = "Input Mapping Context Component")
+	FOnInputMappingContextPushedPopped OnInputMappingContextPopped;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Mapping Context Component")

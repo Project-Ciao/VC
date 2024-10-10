@@ -34,6 +34,89 @@ TArray<FVCInputMap> UVCInputMappingContextComponent::GetInputMapsFromComponents(
 	return InputMaps;
 }
 
+bool UVCInputMappingContextComponent::PushInputMappingContext(APlayerController* Player)
+{
+	if (Player == nullptr)
+	{
+		return false;
+	}
+
+	if (BoundPC == nullptr)
+	{
+		if (!Player->IsLocalPlayerController())
+		{
+			return false;
+		}
+
+		if (const ULocalPlayer* LocalPC = Player->GetLocalPlayer())
+		{
+			UVCInputMappingContextSubsystem* VCInputMappingSubsystem = ULocalPlayer::GetSubsystem<UVCInputMappingContextSubsystem>(LocalPC);
+			if (VCInputMappingSubsystem)
+			{
+				const bool PushedInputMappingComponent = VCInputMappingSubsystem->PushInputContextMappingComponent(this);
+				if (PushedInputMappingComponent)
+				{
+					BoundPC = Player;
+					BP_OnInputMappingContextPushed(BoundPC);
+					OnInputMappingContextPushed.Broadcast(this, BoundPC);
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+bool UVCInputMappingContextComponent::PopInputMappingContext()
+{
+	if (BoundPC != nullptr)
+	{
+		if (const ULocalPlayer* LocalPC = BoundPC->GetLocalPlayer())
+		{
+			UVCInputMappingContextSubsystem* VCInputMappingSubsystem = ULocalPlayer::GetSubsystem<UVCInputMappingContextSubsystem>(LocalPC);
+			if (VCInputMappingSubsystem)
+			{
+				const bool PoppedInputMappingComponent = VCInputMappingSubsystem->PopInputContextMappingComponent(this);
+				if (PoppedInputMappingComponent)
+				{
+					BP_OnInputMappingContextPopped(BoundPC);
+					OnInputMappingContextPopped.Broadcast(this, BoundPC);
+					BoundPC = nullptr;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+void UVCInputMappingContextComponent::ListenForPawnControllerChange(APawn* Pawn)
+{
+	if (Pawn != nullptr)
+	{
+		Pawn->ReceiveControllerChangedDelegate.AddUniqueDynamic(this, &ThisClass::OnReceiveControllerChanged);
+	}
+}
+
+void UVCInputMappingContextComponent::UnlistenToPawnControllerChange(APawn* Pawn)
+{
+	if (Pawn != nullptr)
+	{
+		Pawn->ReceiveControllerChangedDelegate.RemoveAll(this);
+	}
+}
+
+APawn* UVCInputMappingContextComponent::GetInputPawn_Implementation()
+{
+	if (APawn* PawnOwner = Cast<APawn>(GetOwner()))
+	{
+		return PawnOwner;
+	}
+	return nullptr;
+}
+
 void UVCInputMappingContextComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -43,9 +126,17 @@ void UVCInputMappingContextComponent::InitializeComponent()
 		return;
 	}
 
-	if (APawn* PawnOwner = Cast<APawn>(GetOwner()))
+	if (APawn* PawnOwner = GetInputPawn())
 	{
-		PawnOwner->ReceiveControllerChangedDelegate.AddUniqueDynamic(this, &ThisClass::OnReceiveControllerChanged);
+		ListenForPawnControllerChange(PawnOwner);
+
+		if (APlayerController* PC = Cast<APlayerController>(PawnOwner->GetController()))
+		{
+			if (PC->IsLocalPlayerController())
+			{
+				PushInputMappingContext(PC);
+			}
+		}
 	}
 }
 
@@ -53,27 +144,12 @@ void UVCInputMappingContextComponent::OnUnregister()
 {
 	Super::OnUnregister();
 
-	if (UWorld* World = GetWorld())
-	{
-		UGameInstance* GameInstance = World->GetGameInstance();
-
-		if (GameInstance)
-		{
-			for (auto PlayerIt = GameInstance->GetLocalPlayerIterator(); PlayerIt; ++PlayerIt)
-			{
-				UVCInputMappingContextSubsystem* VCInputMappingSubsystem = ULocalPlayer::GetSubsystem<UVCInputMappingContextSubsystem>(*PlayerIt);
-				if (VCInputMappingSubsystem)
-				{
-					VCInputMappingSubsystem->PopInputContextMappingComponent(this);
-				}
-			}
-		}
-	}
+	PopInputMappingContext();
 }
 
 void UVCInputMappingContextComponent::OnReceiveControllerChanged(APawn* Pawn, AController* OldController, AController* NewController)
 {
-	check(GetOwner() == Pawn);
+	//check(GetOwner() == Pawn);
 
 	//GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Black, FString::Printf(L"Pawn: %s, Old controller: %s, new controller: %s",
 	//	*(Pawn ? Pawn->GetName() : FString()),
@@ -82,17 +158,11 @@ void UVCInputMappingContextComponent::OnReceiveControllerChanged(APawn* Pawn, AC
 
 	if (APlayerController* PC = Cast<APlayerController>(OldController))
 	{
-		if (PC == BoundPC)
+		if (PC->IsLocalPlayerController())
 		{
-			if (const ULocalPlayer* LocalPC = PC->GetLocalPlayer())
+			if (PC == BoundPC)
 			{
-				UVCInputMappingContextSubsystem* VCInputMappingSubsystem = ULocalPlayer::GetSubsystem<UVCInputMappingContextSubsystem>(LocalPC);
-				if (VCInputMappingSubsystem)
-				{
-					VCInputMappingSubsystem->PopInputContextMappingComponent(this);
-
-					BoundPC = nullptr;
-				}
+				PopInputMappingContext();
 			}
 		}
 	}
@@ -101,16 +171,7 @@ void UVCInputMappingContextComponent::OnReceiveControllerChanged(APawn* Pawn, AC
 	{
 		if (PC->IsLocalPlayerController())
 		{
-			if (const ULocalPlayer* LocalPC = PC->GetLocalPlayer())
-			{
-				UVCInputMappingContextSubsystem* VCInputMappingSubsystem = ULocalPlayer::GetSubsystem<UVCInputMappingContextSubsystem>(LocalPC);
-				if (VCInputMappingSubsystem)
-				{
-					VCInputMappingSubsystem->PushInputContextMappingComponent(this);
-
-					BoundPC = PC;
-				}
-			}
+			PushInputMappingContext(PC);
 		}
 	}
 }

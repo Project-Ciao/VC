@@ -6,12 +6,12 @@
 #include "Input/VCInputMappingContextComponent.h"
 #include "EnhancedInputSubsystems.h"
 
-void UVCInputMappingContextSubsystem::PushInputContextMappingComponent(UVCInputMappingContextComponent* Component)
+bool UVCInputMappingContextSubsystem::PushInputContextMappingComponent(UVCInputMappingContextComponent* Component)
 {
 	check(Component != nullptr);
 	if (InputMappingStack.Contains(Component))
 	{
-		return;
+		return false;
 	}
 
 	InputMappingStack.AddUnique(Component);
@@ -29,14 +29,15 @@ void UVCInputMappingContextSubsystem::PushInputContextMappingComponent(UVCInputM
 	}
 
 	InputMaps = NewInputMaps;
+	return true;
 }
 
-void UVCInputMappingContextSubsystem::PopInputContextMappingComponent(UVCInputMappingContextComponent* Component)
+bool UVCInputMappingContextSubsystem::PopInputContextMappingComponent(UVCInputMappingContextComponent* Component)
 {
 	check(Component != nullptr);
 	if (!InputMappingStack.Contains(Component))
 	{
-		return;
+		return false;
 	}
 
 	InputMappingStack.Remove(Component);
@@ -55,4 +56,5 @@ void UVCInputMappingContextSubsystem::PopInputContextMappingComponent(UVCInputMa
 	}
 
 	InputMaps = NewInputMaps;
+	return true;
 }

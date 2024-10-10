@@ -15,6 +15,8 @@ public:
 	void OnModuleStartup();
 	void OnModuleShutdown();
 
+	virtual ~FVCEditorTimeOfDay() {}
+
 protected:
 	virtual void RegisterMenus();
 

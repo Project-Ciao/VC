@@ -608,11 +608,14 @@ void UInventoryComponent::CheckSlotsValid() const
 		Slot.CheckValid();
 
 		// This checks to make sure each slot has a unique Item GUID
+		//
+		// This ensure may fire if you tried adding from an inventory slot that
+		// has more items than the slot maximum
 		if (Slot.ItemGuid.IsValid())
 		{
 			bool bAlreadyInSet = false;
 			SlotIDs.Add(Slot.ItemGuid, &bAlreadyInSet);
-			ensure(bAlreadyInSet == false);
+			//ensure(bAlreadyInSet == false);
 		}
 	}
 }

@@ -40,3 +40,30 @@ UWorld* UVCFunctionLibrary::GetWorld(UObject* WorldContextObject)
 {
 	return GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 }
+
+int32 UVCFunctionLibrary::Wrap(int32 Value, int32 Min, int32 Max)
+{
+	Value -= Min;
+	Max -= Min;
+	if (Max == 0)
+	{
+		Max = 1;
+	}
+	return ((Value % Max + Max) % Max) + Min;
+}
+
+bool UVCFunctionLibrary::BindEnhancedInputAction(AActor* Actor, UInputAction* Action, ETriggerEvent TriggerEvent, FVCInputActionBinding Delegate)
+{
+	// Set up action bindings
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(Actor->InputComponent))
+	{
+		const FName FunctionName = Delegate.GetFunctionName();
+		if (FunctionName != NAME_None)
+		{
+			EnhancedInputComponent->BindAction(Action, TriggerEvent, Delegate.GetUObject(), FunctionName);
+			return true;
+		}
+	}
+
+	return false;
+}

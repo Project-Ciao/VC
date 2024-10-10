@@ -18,8 +18,11 @@ class VC_API UVCInputMappingContextSubsystem : public ULocalPlayerSubsystem
 	GENERATED_BODY()
 	
 public:
-	virtual void PushInputContextMappingComponent(UVCInputMappingContextComponent* Component);
-	virtual void PopInputContextMappingComponent(UVCInputMappingContextComponent* Component);
+	// Returns false if the component was already in the InputMappingStacks
+	virtual bool PushInputContextMappingComponent(UVCInputMappingContextComponent* Component);
+
+	// Returns false if the component wasn't in the InputMappingStacks
+	virtual bool PopInputContextMappingComponent(UVCInputMappingContextComponent* Component);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "VC|Input Mapping Context System")
 	TArray<UVCInputMappingContextComponent*> InputMappingStack;
