@@ -10,7 +10,6 @@ UVCInputMappingContextComponent::UVCInputMappingContextComponent(const FObjectIn
 	: Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	bWantsInitializeComponent = true;
 
 	BoundPC = nullptr;
 }
@@ -117,9 +116,9 @@ APawn* UVCInputMappingContextComponent::GetInputPawn_Implementation()
 	return nullptr;
 }
 
-void UVCInputMappingContextComponent::InitializeComponent()
+void UVCInputMappingContextComponent::BeginPlay()
 {
-	Super::InitializeComponent();
+	Super::BeginPlay();
 
 	if (GetNetMode() == ENetMode::NM_DedicatedServer)
 	{

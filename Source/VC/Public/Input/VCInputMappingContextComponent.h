@@ -91,7 +91,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Mapping Context Component")
 	TArray<FVCInputMap> InputMaps;
 
-	virtual void InitializeComponent() override;
+	virtual void BeginPlay() override;
 	void OnUnregister() override;
 
 	UFUNCTION()

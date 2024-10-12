@@ -457,6 +457,8 @@ void UInventoryComponent::RemoveItems(TArray<FInventorySlot> ItemsToRemove)
 		}
 	}
 
+	BroadcastChangedItems();
+
 	// Check to make sure that all the items were removed
 	for (FInventorySlot& RemoveSlot : ItemsToRemove)
 	{
