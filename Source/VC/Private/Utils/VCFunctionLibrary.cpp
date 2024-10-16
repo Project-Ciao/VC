@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "VCFunctionLibrary.h"
+#include "Utils/VCFunctionLibrary.h"
 
 #include "Inkpot/InkpotStory.h"
 
