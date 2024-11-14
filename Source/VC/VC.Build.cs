@@ -15,7 +15,9 @@ public class VC : ModuleRules
 			"InputCore",
 			"EnhancedInput",
 			"Inkpot",
+			"GameplayAbilities",
 			"GameplayTags",
+			"GameplayTasks",
 			"Foliage",
 			"DeveloperSettings"
 		});

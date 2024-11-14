@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"DeveloperSettings",
-				"EnhancedInput"
+				"EnhancedInput",
+				"GameplayAbilities"
 			]
 		},
 		{
@@ -29,6 +30,10 @@
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
 		{
 			"Name": "ModelingToolsEditorMode",
 			"Enabled": true,
@@ -81,6 +86,10 @@
 		{
 			"Name": "ImpostorBaker",
 			"Enabled": false
+		},
+		{
+			"Name": "SkinnedFoliage",
+			"Enabled": true
 		}
 	]
 }

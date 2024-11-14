@@ -9,7 +9,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/LevelStreamingVolume.h"
 
-static bool IsInStreamingLevelVolume(APlayerController* PC, ULevelStreaming* LevelStreamingObject)
+UE_DISABLE_OPTIMIZATION
+static bool IsInStreamingLevelVolume(const APlayerController* PC, ULevelStreaming* LevelStreamingObject)
 {
 	UWorld* World = PC->GetWorld();
 
@@ -127,15 +128,21 @@ void AVCPlayerController::ClientUpdateLevelStreamingStatus_Implementation(FName 
 void AVCPlayerController::AddVisibleLevel(const TSoftObjectPtr<UWorld> Level)
 {
 	const FName LevelPathString = Level.ToSoftObjectPath().GetAssetPath().GetPackageName(); // FPaths::GetPath(Level.ToSoftObjectPath().GetAssetPath().ToString()) / Level.GetAssetName();
+	const FName RemappedLevelPath = NetworkRemapPath(LevelPathString, true);
 	VisibleLevels.AddUnique(LevelPathString);
+	VisibleLevels.AddUnique(RemappedLevelPath);
 	InvisibleLevels.Remove(LevelPathString);
+	InvisibleLevels.Remove(RemappedLevelPath);
 }
 
 void AVCPlayerController::AddInvisibleLevel(const TSoftObjectPtr<UWorld> Level)
 {
 	const FName LevelPathString = Level.ToSoftObjectPath().GetAssetPath().GetPackageName();
+	const FName RemappedLevelPath = NetworkRemapPath(LevelPathString, true);
 	InvisibleLevels.AddUnique(LevelPathString);
+	InvisibleLevels.AddUnique(RemappedLevelPath);
 	VisibleLevels.Remove(LevelPathString);
+	VisibleLevels.Remove(RemappedLevelPath);
 }
 
 void AVCPlayerController::Tick(float DeltaSeconds)
@@ -170,3 +177,4 @@ bool AVCPlayerController::AreAnyLevelsLoading() const
 //	//DOREPLIFETIME(AVCPlayerController, VisibleLevels);
 //	//DOREPLIFETIME(AVCPlayerController, InvisibleLevels);
 //}
+UE_ENABLE_OPTIMIZATION
