@@ -8,6 +8,7 @@
 #include "LevelUtils.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/LevelStreamingVolume.h"
+#include "Level/PlayerLevelStreamingComponent.h"
 
 UE_DISABLE_OPTIMIZATION
 static bool IsInStreamingLevelVolume(const APlayerController* PC, ULevelStreaming* LevelStreamingObject)
@@ -49,6 +50,12 @@ static bool IsInStreamingLevelVolume(const APlayerController* PC, ULevelStreamin
 	}
 
 	return false;
+}
+
+AVCPlayerController::AVCPlayerController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	LevelStreamingComponent = CreateDefaultSubobject<UPlayerLevelStreamingComponent>(TEXT("LevelStreamingComponent"));
 }
 
 void AVCPlayerController::ClientUpdateLevelStreamingStatus_Implementation(FName PackageName, bool bNewShouldBeLoaded,
@@ -127,6 +134,11 @@ void AVCPlayerController::ClientUpdateLevelStreamingStatus_Implementation(FName 
 
 void AVCPlayerController::AddVisibleLevel(const TSoftObjectPtr<UWorld> Level)
 {
+	if (Level.IsNull())
+	{
+		return;
+	}
+
 	const FName LevelPathString = Level.ToSoftObjectPath().GetAssetPath().GetPackageName(); // FPaths::GetPath(Level.ToSoftObjectPath().GetAssetPath().ToString()) / Level.GetAssetName();
 	const FName RemappedLevelPath = NetworkRemapPath(LevelPathString, true);
 	VisibleLevels.AddUnique(LevelPathString);
@@ -137,6 +149,11 @@ void AVCPlayerController::AddVisibleLevel(const TSoftObjectPtr<UWorld> Level)
 
 void AVCPlayerController::AddInvisibleLevel(const TSoftObjectPtr<UWorld> Level)
 {
+	if (Level.IsNull())
+	{
+		return;
+	}
+
 	const FName LevelPathString = Level.ToSoftObjectPath().GetAssetPath().GetPackageName();
 	const FName RemappedLevelPath = NetworkRemapPath(LevelPathString, true);
 	InvisibleLevels.AddUnique(LevelPathString);

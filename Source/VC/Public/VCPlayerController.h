@@ -7,6 +7,7 @@
 #include "VCPlayerController.generated.h"
 
 class ULevelStreaming;
+class UPlayerLevelStreamingComponent;
 
 /**
  * 
@@ -17,6 +18,8 @@ class VC_API AVCPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	AVCPlayerController(const FObjectInitializer& ObjectInitializer);
+
 	virtual void ClientUpdateLevelStreamingStatus_Implementation(FName PackageName, bool bNewShouldBeLoaded, 
 		bool bNewShouldBeVisible, bool bNewShouldBlockOnLoad, int32 LODIndex, FNetLevelVisibilityTransactionId TransactionId, bool bNewShouldBlockOnUnload) override;
 
@@ -41,4 +44,7 @@ protected:
 	// A set of levels that have been requested to load, but aren't fully loaded in
 	UPROPERTY()
 	TArray<TWeakObjectPtr<ULevelStreaming>> LevelsLoading;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "VC|Player Controller")
+	UPlayerLevelStreamingComponent* LevelStreamingComponent;
 };
