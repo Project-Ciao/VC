@@ -33,6 +33,11 @@ bool UDynamicLevelComponent::SpawnLevel(bool MulticastSpawn)
 		return false;
 	}
 
+	if (LevelStreaming != nullptr)
+	{
+		return false;
+	}
+
 	bool bSuccess;
 	LevelStreaming = ULevelStreamingDynamic::LoadLevelInstanceBySoftObjectPtr(this, LevelOptions.Level, LevelOptions.LevelTransform, bSuccess, LevelOptions.GetDynamicLevelName(), LevelOptions.OptionalLevelStreamingClass);
 

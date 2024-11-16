@@ -7,6 +7,8 @@
 #include "Level/LevelTeleportEntranceInterface.h"
 #include "VCLevelFunctionLibrary.generated.h"
 
+class UDynamicLevelComponent;
+
 /**
  * 
  */
@@ -17,7 +19,7 @@ class VC_API UVCLevelFunctionLibrary : public UBlueprintFunctionLibrary
 	
 public:
 	UFUNCTION(BlueprintPure, Category = "Teleport Location")
-	static FTeleportLocation MakeTeleportLocation(TSoftObjectPtr<UWorld> Level, AActor* Location);
+	static FTeleportLocation MakeTeleportLocation(TSoftObjectPtr<UWorld> Level, AActor* Location, UDynamicLevelComponent* DynamicLevel);
 
 	UFUNCTION(BlueprintPure, Category = "Teleport Location")
 	static bool IsTeleportLocationValid(const FTeleportLocation& Location);

@@ -3,11 +3,13 @@
 
 #include "Level/PlayerLevelStreamingComponent.h"
 
+#include "VC.h"
 #include "VCPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/LevelTeleportExitInterface.h"
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
+#include "Level/DynamicLevelComponent.h"
 
 UPlayerLevelStreamingComponent::UPlayerLevelStreamingComponent()
 {
@@ -25,6 +27,16 @@ void UPlayerLevelStreamingComponent::StreamLevel(TSoftObjectPtr<UWorld> LevelToU
 	}
 	bIsStreamRequestInFlight = true;
 
+	UE_LOG(LogVC, Log, TEXT("PlayerLevelStreamingComponent::StreamLevel Request. Level to load: %s, Level to unload: %s"), *TeleportLocation.Level.ToString(), *LevelToUnload.ToString());
+
+	UE_LOG(LogVC, Warning, TEXT("World: %s"), *GetWorld()->GetName());
+
+	if (GetWorld() == LevelToUnload.Get())
+	{
+		//UE_LOG(LogTemp, Fatal, TEXT("test"));
+		LevelToUnload.Reset();
+	}
+
 	CurrentRequestLevelToUnload = LevelToUnload;
 	CurrentRequestTeleportLocation = TeleportLocation;
 	CurrentRequestPlayLevelFadeOutOnComplete = bPlayLevelFadeOutOnComplete;
@@ -34,6 +46,11 @@ void UPlayerLevelStreamingComponent::StreamLevel(TSoftObjectPtr<UWorld> LevelToU
 
 	PC->AddVisibleLevel(TeleportLocation.Level);
 	PC->AddInvisibleLevel(LevelToUnload);
+
+	if (TeleportLocation.DynamicLevel != nullptr)
+	{
+		TeleportLocation.DynamicLevel->SpawnLevel(false);
+	}
 
 	FLatentActionInfo Info;
 	Info.CallbackTarget = this;
@@ -45,12 +62,19 @@ void UPlayerLevelStreamingComponent::StreamLevel(TSoftObjectPtr<UWorld> LevelToU
 
 void UPlayerLevelStreamingComponent::OnLevelLoaded()
 {
-	FLatentActionInfo Info;
-	Info.CallbackTarget = this;
-	Info.ExecutionFunction = "OnLevelUnloaded";
-	Info.UUID = 1;
-	Info.Linkage = 0;
-	UGameplayStatics::UnloadStreamLevelBySoftObjectPtr(this, CurrentRequestLevelToUnload, Info, false);
+	if (CurrentRequestLevelToUnload.IsValid())
+	{
+		FLatentActionInfo Info;
+		Info.CallbackTarget = this;
+		Info.ExecutionFunction = "OnLevelUnloaded";
+		Info.UUID = 1;
+		Info.Linkage = 0;
+		UGameplayStatics::UnloadStreamLevelBySoftObjectPtr(this, CurrentRequestLevelToUnload, Info, false);
+	}
+	else
+	{
+		OnLevelUnloaded();
+	}
 }
 
 void UPlayerLevelStreamingComponent::OnLevelUnloaded()
@@ -72,7 +96,7 @@ void UPlayerLevelStreamingComponent::Server_NotifyFinishLevelStreaming_Implement
 
 void UPlayerLevelStreamingComponent::OnLevelLoadedServer()
 {
-	// This should already be loaded
+	// This should already be loaded if the level is loaded
 	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
 	Streamable.RequestAsyncLoad(CurrentRequestTeleportLocation.Location.ToSoftObjectPath(), FStreamableDelegate::CreateUObject(this, &ThisClass::OnTeleportLocationLoadedServer));
 }
@@ -92,7 +116,16 @@ void UPlayerLevelStreamingComponent::OnTeleportLocationLoadedServer()
 	UObject* Exit = CurrentRequestTeleportLocation.Location.GetUniqueID().ResolveObject();
 	if (ensure(Exit != nullptr))
 	{
+		UE_LOG(LogVC, Log, TEXT("Teleporting player to teleport: %s"), *Exit->GetName());
+
+		// The exit can be marked for GC, test it here
+		ensure(IsValid(Exit));
+
 		ILevelTeleportExitInterface::Execute_TeleportToExit(Exit, PC->GetPawn());
+	}
+	else
+	{
+		UE_LOG(LogVC, Warning, TEXT("Failed to load teleport exit! %s"), *CurrentRequestTeleportLocation.Location.ToString());
 	}
 
 	Client_FinishLevelStreamingRequest();

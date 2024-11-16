@@ -7,6 +7,7 @@
 #include "LevelTeleportEntranceInterface.generated.h"
 
 class ULevelTeleportExitInterface;
+class UDynamicLevelComponent;
 
 USTRUCT(BlueprintType)
 struct FTeleportLocation
@@ -18,6 +19,10 @@ struct FTeleportLocation
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Teleport Location")
 	TSoftObjectPtr<ULevelTeleportExitInterface> Location;
+
+	// Optional dynamic level component ptr. If this level isn't loaded it will be loaded
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Teleport Location")
+	UDynamicLevelComponent* DynamicLevel;
 };
 
 UINTERFACE(MinimalAPI, Blueprintable, BlueprintType)

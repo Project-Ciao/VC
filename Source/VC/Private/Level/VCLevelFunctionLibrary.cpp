@@ -2,9 +2,11 @@
 
 
 #include "Level/VCLevelFunctionLibrary.h"
-#include "Level/LevelTeleportExitInterface.h"
 
-FTeleportLocation UVCLevelFunctionLibrary::MakeTeleportLocation(TSoftObjectPtr<UWorld> Level, AActor* Location)
+#include "Level/LevelTeleportExitInterface.h"
+#include "Level/DynamicLevelComponent.h"
+
+FTeleportLocation UVCLevelFunctionLibrary::MakeTeleportLocation(TSoftObjectPtr<UWorld> Level, AActor* Location, UDynamicLevelComponent* DynamicLevel)
 {
 	FTeleportLocation Out;
 	Out.Level = Level;
@@ -13,6 +15,7 @@ FTeleportLocation UVCLevelFunctionLibrary::MakeTeleportLocation(TSoftObjectPtr<U
 		check(Location->GetClass()->ImplementsInterface(ULevelTeleportExitInterface::StaticClass()));
 	}
 	Out.Location = Location;
+	Out.DynamicLevel = DynamicLevel;
 	return Out;
 }
 
